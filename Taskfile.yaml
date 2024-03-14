@@ -1,0 +1,26 @@
+version: '3'
+tasks:
+#    exercism download --track=go --exercise=party-robot
+  start:
+    desc: "Starts a new exercise for the given language and name. Usage: start -- <lang> <name>"
+    vars:
+      LANG: "{{.CLI_ARGS | splitArgs | first}}"
+      EXERCISE: "{{.CLI_ARGS | splitArgs | rest | first}}"
+    preconditions:
+      - sh: test -n "{{.EXERCISE}}"
+        msg: "Missing exercise name. Usage: task start -- <lang> <exercise-name>"
+      - sh: test -n "{{.LANG}}"
+        msg: "Missing language. Usage: task start -- <lang> <exercise-name>"
+    cmd: exercism download --track={{.LANG}} --exercise={{.EXERCISE}}
+  submit:
+    desc: "Submits the current directory as a solution"
+    dir: "{{.USER_WORKING_DIR}}"
+    cmd: exercism submit
+  test-go:
+    desc: "Runs tests in the current directory"
+    dir: "{{.USER_WORKING_DIR}}"
+    cmd: go test ./...
+  test-emacs-lisp:
+    desc: "Runs tests in the current directory"
+    dir: "{{.USER_WORKING_DIR}}"
+    cmd: emacs -batch -l ert -l *-test.el -f ert-run-tests-batch-and-exit
